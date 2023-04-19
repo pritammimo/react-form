@@ -1,8 +1,9 @@
 import React from 'react'
+import Register from './Components/Register'
 
 const App = () => {
   return (
-    <h1 className="text-3xl font-bold underline text-center">Hello world!</h1>
+    <Register/>
   )
 }
 
