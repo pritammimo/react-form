@@ -2,7 +2,9 @@ import React from 'react'
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 const Register = () => {
-    const {register,control,handleSubmit}=useForm();
+    const {register,control,handleSubmit,formState}=useForm();
+    console.log("form",formState);
+    const {errors}=formState
    const onSubmit=(data)=>{
     console.log("data",data);
    }
@@ -52,7 +54,9 @@ const Register = () => {
   
           <form 
           onSubmit={handleSubmit(onSubmit)}
-          className="mt-8 grid grid-cols-6 gap-6">
+          className="mt-8 grid grid-cols-6 gap-6"
+          noValidate
+          >
             <div className="col-span-6 sm:col-span-3">
               <label
                 for="FirstName"
@@ -64,8 +68,11 @@ const Register = () => {
               <input
                 type="text"
                 id="FirstName"
-                 {...register("FirstName")}
+                 {...register("FirstName",{
+                    required:"FirstName is Required"
+                 })}
               />
+              <p>{errors?.FirstName?.message}</p>
             </div>
   
             <div className="col-span-6 sm:col-span-3">
@@ -79,8 +86,12 @@ const Register = () => {
               <input
                 type="text"
                 id="LastName"
-                {...register("LastName")}
+                {...register("LastName",{
+                    required:"LastName is Required"
+                 }
+                )}
               />
+               <p>{errors?.LastName?.message}</p>
             </div>
   
             <div className="col-span-6">
@@ -91,8 +102,29 @@ const Register = () => {
               <input
                 type="email"
                 id="Email"
-                {...register("Email")}
+                {...register("email", {
+                    pattern: {
+                      value:
+                        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                      message: "Invalid email format",
+                    },
+                    validate: {
+                      notAdmin: (fieldValue) => {
+                        return (
+                          fieldValue !== "admin@example.com" ||
+                          "Enter a different email address"
+                        );
+                      },
+                      notBlackListed: (fieldValue) => {
+                        return (
+                          !fieldValue.endsWith("baddomain.com") ||
+                          "This domain is not supported"
+                        );
+                      },
+                    },
+                  })}
               />
+              <p>{errors?.Email?.message}</p>
             </div>
   
             <div className="col-span-6 sm:col-span-3">
@@ -106,8 +138,17 @@ const Register = () => {
               <input
                 type="password"
                 id="Password"
-                {...register("Password")}
+                {...register("Password",{
+                    required:"Password is Required",
+                    validate:(fieldValue)=>{
+                        return (
+                            fieldValue.length >8 ||
+                            "Enter a Strong a password"
+                          );
+                    }
+                })}
               />
+               <p>{errors?.Password?.message}</p>
             </div>
   
             <div className="col-span-6 sm:col-span-3">
@@ -121,8 +162,12 @@ const Register = () => {
               <input
                 type="password"
                 id="PasswordConfirmation"
-                {...register("PasswordConfirmation")}
+                {...register("PasswordConfirmation",
+                {
+                    required:"PasswordConfirmation is Required"
+                })}
               />
+              <p>{errors?.PasswordConfirmation?.message}</p>
             </div>
   
             <div className="col-span-6">
@@ -130,10 +175,13 @@ const Register = () => {
                 <input
                   type="checkbox"
                   id="MarketingAccept"
-                  name="marketing_accept"
-                  className="h-5 w-5 rounded-md border-gray-200 bg-white shadow-sm"
+                  {...register("MarketingAccept",
+                  {
+                      required:"MarketingAccept is Required"
+                  })}
+                  
                 />
-  
+                <p>{errors?.MarketingAccept?.message}</p>
                 <span className="text-sm text-gray-700">
                   I want to receive emails about events, product updates and
                   company announcements.
