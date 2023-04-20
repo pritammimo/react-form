@@ -1,5 +1,5 @@
 import React from 'react'
-import { useForm } from "react-hook-form";
+import { useForm,useFieldArray } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 const Register = () => {
     const {register,control,handleSubmit,formState}=useForm({
@@ -16,12 +16,19 @@ const Register = () => {
             twitter:"",
             facebook:""
           },
-          PhoneNumbers:["",""]
+          PhoneNumbers:["",""],
+          CouponCode:[{
+            number:""
+          }]
         }
       }
     });
     const {errors}=formState
     console.log("errors",errors);
+    const {fields,append,remove}=useFieldArray({
+      name:"CouponCode",
+      control
+    })
    const onSubmit=(data)=>{
     console.log("data",data);
    }
@@ -261,7 +268,38 @@ const Register = () => {
               />
                 {errors?.PhoneNumbers?.length >1 && <p>{errors?.PhoneNumbers[1]?.message}</p> }
             </div>
-  
+            <div className="col-span-6">
+              <label for="Email" className="block text-sm font-medium text-gray-700">
+                List of Coupon Codes
+              </label>
+               {fields?.map((field,index)=>(
+                <div key={index} className='flex'>
+                  <input
+                type="text"
+                {...register(`CouponCode.${index}.number`)}
+              />
+              {
+                fields?.length >1 && 
+                <button type="button" onClick={()=>remove(index)}> 
+                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+                </button>
+               
+              }
+         
+
+                </div>
+               ))}
+            <button type="button" onClick={()=>append({numbers:""})}> 
+               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+</svg>
+    </button>
+
+              
+              {/* <p>{errors?.Email?.message}</p> */}
+            </div>
             <div className="col-span-6">
               <label for="MarketingAccept" className="flex gap-4">
                 <input
