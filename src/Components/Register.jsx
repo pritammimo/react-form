@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm,useFieldArray } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 const Register = () => {
-    const {register,control,handleSubmit,formState}=useForm({
+    const {register,control,handleSubmit,formState,watch}=useForm({
       defaultValues:async()=>{
         const response = await fetch(
           "https://jsonplaceholder.typicode.com/users/1"
@@ -19,7 +19,9 @@ const Register = () => {
           PhoneNumbers:["",""],
           CouponCode:[{
             number:""
-          }]
+          }],
+          age:"",
+          Dob:""
         }
       }
     });
@@ -152,6 +154,44 @@ const Register = () => {
             </div>
             <div className="col-span-6 sm:col-span-3">
               <label
+                for="age"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Age
+              </label>
+  
+              <input
+                type="number"
+                id="age"
+                {...register("age",{
+                    valueAsNumber:true,
+                    required:"Primary Phone Number is Required",
+                })}
+              />
+               <p>{errors?.age?.message}</p> 
+            </div>
+  
+            <div className="col-span-6 sm:col-span-3">
+              <label
+                for="Dob"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Date of birth
+              </label>
+  
+              <input
+                type="date"
+                id="dob"
+                {...register("dob",{
+                  valueAsDate:true,
+                   required:"Date of birth is Required",
+
+                })}
+              />
+                <p>{errors?.dob?.message}</p> 
+            </div>
+            <div className="col-span-6 sm:col-span-3">
+              <label
                 htmlFor="twitter"
                 className="block text-sm font-medium text-gray-700"
               >
@@ -209,7 +249,7 @@ const Register = () => {
                 for="PasswordConfirmation"
                 className="block text-sm font-medium text-gray-700"
               >
-                Password Confirmation
+                Confirm password
               </label>
   
               <input
@@ -217,7 +257,13 @@ const Register = () => {
                 id="PasswordConfirmation"
                 {...register("PasswordConfirmation",
                 {
-                    required:"PasswordConfirmation is Required"
+                    required:"PasswordConfirmation is Required",
+                    validate:(fieldValue)=>{
+                      return (
+                          watch("Password")===fieldValue ||
+                          "Confirm password should be same as password"
+                        );
+                  }
                 })}
               />
               <p>{errors?.PasswordConfirmation?.message}</p>
@@ -318,7 +364,7 @@ const Register = () => {
                 </span>
               </label>
             </div>
-  
+      
             <div className="col-span-6">
               <p className="text-sm text-gray-500">
                 By creating an account, you agree to our
