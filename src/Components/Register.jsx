@@ -2,9 +2,26 @@ import React from 'react'
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 const Register = () => {
-    const {register,control,handleSubmit,formState}=useForm();
-    console.log("form",formState);
+    const {register,control,handleSubmit,formState}=useForm({
+      defaultValues:async()=>{
+        const response = await fetch(
+          "https://jsonplaceholder.typicode.com/users/1"
+        );
+        const data = await response.json()
+        return {
+          FirstName:"Pritam",
+          LastName:"Saha",
+          email:data?.email,
+          social:{
+            twitter:"",
+            facebook:""
+          },
+          PhoneNumbers:["",""]
+        }
+      }
+    });
     const {errors}=formState
+    console.log("errors",errors);
    const onSubmit=(data)=>{
     console.log("data",data);
    }
@@ -111,7 +128,7 @@ const Register = () => {
                     validate: {
                       notAdmin: (fieldValue) => {
                         return (
-                          fieldValue !== "admin@example.com" ||
+                          fieldValue !== "Pritam@yopmail.com" ||
                           "Enter a different email address"
                         );
                       },
@@ -126,7 +143,36 @@ const Register = () => {
               />
               <p>{errors?.Email?.message}</p>
             </div>
+            <div className="col-span-6 sm:col-span-3">
+              <label
+                htmlFor="twitter"
+                className="block text-sm font-medium text-gray-700"
+              >
+                twitter
+              </label>
   
+              <input
+                type="text"
+                id="twitter"
+                {...register("social.twitter")}
+              />
+               <p>{errors?.social?.twitter?.message}</p>
+            </div>
+            <div className="col-span-6 sm:col-span-3">
+              <label
+                htmlFor="facebook"
+                className="block text-sm font-medium text-gray-700"
+              >
+                facebook
+              </label>
+  
+              <input
+                type="text"
+                id="facebook"
+                {...register("social.facebook")}
+              />
+               <p>{errors?.social?.facebook?.message}</p>
+            </div>
             <div className="col-span-6 sm:col-span-3">
               <label
                 for="Password"
@@ -168,6 +214,52 @@ const Register = () => {
                 })}
               />
               <p>{errors?.PasswordConfirmation?.message}</p>
+            </div>
+            <div className="col-span-6 sm:col-span-3">
+              <label
+                for="PrimaryPhoneNumber"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Primary Phone Number
+              </label>
+  
+              <input
+                type="text"
+                id="PrimaryPhoneNumber"
+                {...register("PhoneNumbers.0",{
+                    required:"Primary Phone Number is Required",
+                    validate:(fieldValue)=>{
+                      return (
+                          fieldValue.length <10 ||
+                          "Phone Number can't be more than 10 characters"
+                        );
+                  }
+                })}
+              />
+               {errors?.PhoneNumbers?.length >0 && <p>{errors?.PhoneNumbers[0]?.message}</p> }
+            </div>
+  
+            <div className="col-span-6 sm:col-span-3">
+              <label
+                for="SecondaryPhoneNumber"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Secondary Phone Number
+              </label>
+  
+              <input
+                type="text"
+                id="SecondaryPhoneNumber"
+                {...register("PhoneNumbers.1",{
+                    validate:(fieldValue)=>{
+                      return (
+                          fieldValue.length <10 ||
+                          "Phone Number can't be more than 10 characters"
+                        );
+                  }
+                })}
+              />
+                {errors?.PhoneNumbers?.length >1 && <p>{errors?.PhoneNumbers[1]?.message}</p> }
             </div>
   
             <div className="col-span-6">
