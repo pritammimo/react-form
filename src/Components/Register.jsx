@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm,useFieldArray } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 const Register = () => {
-    const {register,control,handleSubmit,formState,watch}=useForm({
+    const {register,control,handleSubmit,formState,watch,getValues,setValue}=useForm({
       defaultValues:async()=>{
         const response = await fetch(
           "https://jsonplaceholder.typicode.com/users/1"
@@ -16,6 +16,8 @@ const Register = () => {
             twitter:"",
             facebook:""
           },
+          Password:"",
+          PasswordConfirmation:"",
           PhoneNumbers:["",""],
           CouponCode:[{
             number:""
@@ -25,14 +27,26 @@ const Register = () => {
         }
       }
     });
-    const {errors}=formState
-    console.log("errors",errors);
+    const {errors,touchedFields,dirtyFields,isDirty}=formState
+    console.log("errors",errors,isDirty);
     const {fields,append,remove}=useFieldArray({
       name:"CouponCode",
       control
     })
    const onSubmit=(data)=>{
-    console.log("data",data);
+    if(isDirty){
+      console.log("data",data);
+    }
+   }
+   const handlegetvalues=()=>{
+    console.log("getvalues",getValues(["FirstName","LastName"]));
+   }
+   const handlesetvalues=()=>{
+    setValue("FirstName","",{
+      shouldValidate:true,
+      shouldDirty:true,
+      shouldTouch:true
+    })
    }
   return (
   <section className="bg-white">
@@ -257,6 +271,7 @@ const Register = () => {
                 id="PasswordConfirmation"
                 {...register("PasswordConfirmation",
                 {
+                    disabled:watch("Password")==="",
                     required:"PasswordConfirmation is Required",
                     validate:(fieldValue)=>{
                       return (
@@ -315,7 +330,7 @@ const Register = () => {
                 {errors?.PhoneNumbers?.length >1 && <p>{errors?.PhoneNumbers[1]?.message}</p> }
             </div>
             <div className="col-span-6">
-              <label for="Email" className="block text-sm font-medium text-gray-700">
+              <label for="couponcode" className="block text-sm font-medium text-gray-700">
                 List of Coupon Codes
               </label>
                {fields?.map((field,index)=>(
@@ -378,11 +393,25 @@ const Register = () => {
   
             <div className="col-span-6 sm:flex sm:items-center sm:gap-4">
               <button
+              disabled={!isDirty}
                 className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
               >
                 Create an account
               </button>
-  
+              <button
+              type="button"
+                className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
+                onClick={handlegetvalues}
+              >
+                Check values
+              </button>
+              <button
+              type="button"
+                className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
+                onClick={handlesetvalues}
+              >
+                Set values
+              </button>
               <p className="mt-4 text-sm text-gray-500 sm:mt-0">
                 Already have an account?
                 <a href="#" className="text-gray-700 underline">Log in</a>.
