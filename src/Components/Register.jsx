@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm,useFieldArray } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 const Register = () => {
-    const {register,control,handleSubmit,formState,watch,getValues,setValue}=useForm({
+    const {register,control,handleSubmit,formState,watch,getValues,setValue,setError}=useForm({
       defaultValues:async()=>{
         const response = await fetch(
           "https://jsonplaceholder.typicode.com/users/1"
@@ -95,7 +95,7 @@ const Register = () => {
           <form 
           onSubmit={handleSubmit(onSubmit)}
           className="mt-8 grid grid-cols-6 gap-6"
-          noValidate
+          //noValidate
           >
             <div className="col-span-6 sm:col-span-3">
               <label
@@ -280,6 +280,9 @@ const Register = () => {
                         );
                   }
                 })}
+                onFocus={() => {
+                  setError("PasswordConfirmation", { type: 'custom', message: '' });
+                }}
               />
               <p>{errors?.PasswordConfirmation?.message}</p>
             </div>
