@@ -1,8 +1,8 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import { useForm,useFieldArray } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 const Register = () => {
-    const {register,control,handleSubmit,formState,watch,getValues,setValue,setError}=useForm({
+    const {register,control,handleSubmit,formState,watch,getValues,setValue,setError,reset}=useForm({
       defaultValues:async()=>{
         const response = await fetch(
           "https://jsonplaceholder.typicode.com/users/1"
@@ -27,8 +27,8 @@ const Register = () => {
         }
       }
     });
-    const {errors,touchedFields,dirtyFields,isDirty}=formState
-    console.log("errors",errors,isDirty);
+    const {errors,touchedFields,dirtyFields,isDirty,isSubmitSuccessful}=formState
+    console.log("errors",errors,isDirty,isSubmitSuccessful);
     const {fields,append,remove}=useFieldArray({
       name:"CouponCode",
       control
@@ -48,6 +48,11 @@ const Register = () => {
       shouldTouch:true
     })
    }
+   useEffect(() => {
+    if(isSubmitSuccessful){
+      reset()
+    }
+   }, [reset,isSubmitSuccessful]);
   return (
   <section className="bg-white">
     <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
@@ -161,10 +166,17 @@ const Register = () => {
                           "This domain is not supported"
                         );
                       },
+                      emailAvailable: async (fieldValue) => {
+                        const response = await fetch(
+                          `https://jsonplaceholder.typicode.com/users?email=${fieldValue}`
+                        );
+                        const data = await response.json();
+                        return data.length === 0 || "Email already exists";
+                      },
                     },
                   })}
               />
-              <p>{errors?.Email?.message}</p>
+              <p>{errors?.email?.message}</p>
             </div>
             <div className="col-span-6 sm:col-span-3">
               <label
@@ -407,6 +419,13 @@ const Register = () => {
                 onClick={handlegetvalues}
               >
                 Check values
+              </button>
+              <button
+              type="button"
+                className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
+                onClick={()=>reset()}
+              >
+                Reset values
               </button>
               <button
               type="button"
