@@ -1,7 +1,25 @@
 import React,{useEffect} from 'react'
-import { useForm,useFieldArray } from "react-hook-form";
+import { useForm,useFieldArray ,useController} from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
+import Select from 'react-select';
 const Register = () => {
+  const colourOptions=[
+    { value: 'ocean', label: 'Ocean', color: '#00B8D9', isFixed: true },
+    { value: 'blue', label: 'Blue', color: '#0052CC', isDisabled: true },
+    { value: 'purple', label: 'Purple', color: '#5243AA' },
+    { value: 'red', label: 'Red', color: '#FF5630', isFixed: true },
+    { value: 'orange', label: 'Orange', color: '#FF8B00' },
+    { value: 'yellow', label: 'Yellow', color: '#FFC400' },
+    { value: 'green', label: 'Green', color: '#36B37E' },
+    { value: 'forest', label: 'Forest', color: '#00875A' },
+    { value: 'slate', label: 'Slate', color: '#253858' },
+    { value: 'silver', label: 'Silver', color: '#666666' },
+  ];
+  const languageList = [
+    { value: 1, label: 'English' },
+    { value: 2, label: 'Hindi' }
+  ];
+  
     const {register,control,handleSubmit,formState,watch,getValues,setValue,setError,reset}=useForm({
       defaultValues:async()=>{
         const response = await fetch(
@@ -27,6 +45,7 @@ const Register = () => {
         }
       }
     });
+    const { field: { value: langValue, onChange: langOnChange, ...restLangField } } = useController({ name: 'language', control });
     const {errors,touchedFields,dirtyFields,isDirty,isSubmitSuccessful}=formState
     console.log("errors",errors,isDirty,isSubmitSuccessful);
     const {fields,append,remove}=useFieldArray({
@@ -48,11 +67,11 @@ const Register = () => {
       shouldTouch:true
     })
    }
-   useEffect(() => {
-    if(isSubmitSuccessful){
-      reset()
-    }
-   }, [reset,isSubmitSuccessful]);
+  //  useEffect(() => {
+  //   if(isSubmitSuccessful){
+  //     reset()
+  //   }
+  //  }, [reset,isSubmitSuccessful]);
   return (
   <section className="bg-white">
     <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
@@ -344,6 +363,35 @@ const Register = () => {
               />
                 {errors?.PhoneNumbers?.length >1 && <p>{errors?.PhoneNumbers[1]?.message}</p> }
             </div>
+            <div className="col-span-6 sm:col-span-6">
+              <label
+                for="Roles"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Langugae
+              </label>
+              <Select
+        className='select-input'
+        placeholder="Select Language"
+        isClearable
+        options={languageList}
+        value={langValue ? languageList.find(x => x.value === langValue) : langValue}
+        onChange={option => langOnChange(option ? option.value : option)}
+        {...restLangField}
+      />
+              {/* <Select
+        className="basic-single"
+        classNamePrefix="select"
+        defaultValue={colourOptions[0]}
+        isDisabled={false}
+        isLoading={false}
+        isClearable={true}
+        //isRtl={isRtl}
+        isSearchable={true}
+        name="color"
+        options={colourOptions}
+      /> */}
+            </div>
             <div className="col-span-6">
               <label for="couponcode" className="block text-sm font-medium text-gray-700">
                 List of Coupon Codes
@@ -405,7 +453,7 @@ const Register = () => {
                 <a href="#" className="text-gray-700 underline">privacy policy</a>.
               </p>
             </div>
-  
+           
             <div className="col-span-6 sm:flex sm:items-center sm:gap-4">
               <button
               disabled={!isDirty}
